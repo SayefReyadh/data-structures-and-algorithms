@@ -9,12 +9,21 @@ struct Edge
     int w;
 };
 
-bool operator < (Edge a , Edge b)
+bool operator < (Edge lhs, Edge rhs)
 {
-    return a.w < b.w;
+    return lhs.w < rhs.w;
+}
+
+bool cmp(const Edge &lhs, const Edge &rhs)
+{
+    if(lhs.u != rhs.u)
+        return lhs.u < rhs.u;
+    else
+        return lhs.w < rhs.w;
 }
 
 int parent[MX];
+bool taken[MX];
 vector<Edge> E;
 
 int findParent(int u)
@@ -26,7 +35,7 @@ int findParent(int u)
 
 int kruskal()
 {
-    sort(E.begin() , E.end());
+    sort(E.begin(), E.end());
 
     int sz = E.size();
 
@@ -37,20 +46,56 @@ int kruskal()
         {
             //union
             parent[parent[E[i].u]] = parent[E[i].v];
-            cout << "PRINT " ;
-            cout << E[i].u << " " << E[i].v << " " << E[i].w << endl;
+            taken[i] = true;
             ans+=E[i].w;
         }
     }
     return ans;
 }
 
+int kruskal2()
+{
+    sort(E.begin(), E.end(), cmp);
+
+    int sz = E.size();
+
+    for(int i = 0 ; i < 100 ; i++)
+    {
+        parent[i] = i;
+    }
+    int ans = 0;
+
+    for(int i = 0 ; i < sz ; i++)
+    {
+
+        //union
+        if(!taken[i])
+        {
+            if(!(i < sz && E[i].u == E[i+1].u))
+            {
+                continue;
+            }
+            else
+            {
+                ans+=E[i].w;
+            }
+
+        }
+        else
+        {
+            ans+=E[i].w;
+        }
+
+    }
+    return ans;
+}
+
 int main()
 {
-    freopen("prims.txt" , "r" , stdin);
-    int vertex , edge;
+    freopen("prims2.txt", "r", stdin);
+    int vertex, edge;
     cin >> vertex >> edge;
-    for(int i = 0 ; i < vertex ; i++)
+    for(int i = 0 ; i < 100 ; i++)
     {
         parent[i] = i;
     }
@@ -60,6 +105,10 @@ int main()
         cin >> e.u >> e.v >> e.w;
         E.push_back(e);
     }
-    cout << kruskal() << endl;
+    cout << "1st MST" << endl;
+    cout << "Cost " << kruskal() << endl;
+    cout << endl;
+    cout << "2nd MST" << endl;
+    cout << "Cost " << kruskal2() << endl;
 }
 
